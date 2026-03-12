@@ -1,0 +1,23 @@
+server:
+  host: 0.0.0.0
+  ws_port: 8080
+  http_port: 8081
+  network_threads: 4
+  actor_threads: 8
+  storage_threads: 4
+  mailbox_capacity: 65536
+
+database:
+  host: localhost
+  port: 5432
+  user: svitock
+  password: secret
+  db: svitock
+  pool_size: 16
+
+security:
+  jwt_secret: "svitock-secret"
+  jwt_ttl_seconds: 3600
+
+logging:
+  level: info
