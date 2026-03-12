@@ -1,5 +1,6 @@
 #include "infrastructure/repositories/postgres_message_repository.hpp"
 
+#include <boost/uuid/string_generator.hpp>
 #include <boost/uuid/uuid_io.hpp>
 
 namespace svitock::infrastructure::repositories {
@@ -31,11 +32,12 @@ std::vector<domain::message::Message> PostgresMessageRepository::getByChat(const
 
     std::vector<domain::message::Message> messages;
     messages.reserve(result.size());
+    boost::uuids::string_generator generator;
     for (const auto& row : result) {
         messages.emplace_back(
-            boost::uuids::string_generator{}(row["id"].as<std::string>()),
-            boost::uuids::string_generator{}(row["chat_id"].as<std::string>()),
-            boost::uuids::string_generator{}(row["sender_id"].as<std::string>()),
+            generator(row["id"].as<std::string>()),
+            generator(row["chat_id"].as<std::string>()),
+            generator(row["sender_id"].as<std::string>()),
             row["content"].as<std::string>(),
             std::chrono::system_clock::now());
     }

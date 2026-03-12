@@ -26,14 +26,16 @@ beast_http::response<beast_http::string_body> HttpRouter::route(
         response.result(beast_http::status::ok);
         response.body() = nlohmann::json{{"access_token", jwtService_.issueToken(userId, 3600)}}.dump();
     } else if (request.method() == beast_http::verb::post && request.target() == "/refresh") {
-        const auto auth = request[beast_http::field::authorization].to_string();
+        const std::string auth{request[beast_http::field::authorization]};
         const auto token = auth.substr(auth.find(' ') + 1);
         if (!jwtService_.validateToken(token)) {
             response.result(beast_http::status::unauthorized);
             response.body() = nlohmann::json{{"error", "invalid token"}}.dump();
         } else {
+            nlohmann::json tokenResponse;
+            tokenResponse["access_token"] = jwtService_.issueToken(jwtService_.extractUserId(token), 3600);
             response.result(beast_http::status::ok);
-            response.body() = nlohmann::json{{"access_token", jwtService_.issueToken(jwtService_.extractUserId(token), 3600)}}.dump();
+            response.body() = tokenResponse.dump();
         }
     } else if (request.method() == beast_http::verb::get && request.target().starts_with("/user/")) {
         const auto id = std::string(request.target().substr(6));

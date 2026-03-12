@@ -1,5 +1,6 @@
 #include "infrastructure/repositories/postgres_user_repository.hpp"
 
+#include <boost/uuid/string_generator.hpp>
 #include <boost/uuid/uuid_io.hpp>
 
 namespace svitock::infrastructure::repositories {
@@ -17,11 +18,12 @@ std::optional<domain::user::User> PostgresUserRepository::findByUsername(const s
         return std::nullopt;
     }
 
-    return domain::user::User{
-        boost::uuids::string_generator{}(result[0]["id"].as<std::string>()),
+    boost::uuids::string_generator generator;
+    return domain::user::User(
+        generator(result[0]["id"].as<std::string>()),
         result[0]["username"].as<std::string>(),
         result[0]["password_hash"].as<std::string>(),
-        std::chrono::system_clock::now()};
+        std::chrono::system_clock::now());
 }
 
 bool PostgresUserRepository::create(const domain::user::User& user) {
