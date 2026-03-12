@@ -14,7 +14,7 @@ WebSocketSession::WebSocketSession(TcpSocket socket,
                                    actors::SessionActor& sessionActor,
                                    std::shared_ptr<spdlog::logger> logger)
     : ws_(std::move(socket)),
-      strand_(ws_.get_executor()),
+      strand_(boost::asio::make_strand(static_cast<boost::asio::io_context&>(ws_.get_executor().context()))),
       sessionId_(std::move(sessionId)),
       dispatcher_(dispatcher),
       sessionActor_(sessionActor),

@@ -5,6 +5,7 @@
 #include <string>
 
 #include <boost/asio/strand.hpp>
+#include <boost/asio/io_context.hpp>
 #include <boost/beast/core/flat_buffer.hpp>
 #include <boost/beast/core/tcp_stream.hpp>
 #include <boost/beast/websocket.hpp>
@@ -49,7 +50,7 @@ private:
 
     boost::beast::websocket::stream<boost::beast::tcp_stream> ws_;
     boost::beast::flat_buffer readBuffer_;
-    boost::asio::strand<boost::asio::any_io_executor> strand_;
+    boost::asio::strand<boost::asio::io_context::executor_type> strand_;
 
     std::string sessionId_;
     dispatcher::MessageDispatcher& dispatcher_;
